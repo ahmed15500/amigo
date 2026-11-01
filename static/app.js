@@ -37,26 +37,4 @@
     });
     update();
   }
-  const form = document.querySelector('#profile-form');
-  form?.addEventListener('submit', event => {
-    event.preventDefault();
-    try {
-      localStorage.setItem('amigo-demo-profile', JSON.stringify({faculty: document.querySelector('#profile-faculty').value, year: document.querySelector('#profile-year').value}));
-      location.assign('/dashboard');
-    } catch (_) { alert('تعذّر حفظ الاختيار على هذا الجهاز.'); }
-  });
-  const recs = document.querySelector('#recommendations');
-  if (recs) {
-    let profile = null;
-    try { profile = JSON.parse(localStorage.getItem('amigo-demo-profile') || 'null'); } catch (_) {}
-    const cards = [...recs.querySelectorAll('[data-course]')];
-    let count = 0;
-    cards.forEach(card => {
-      const matches = !!profile && card.dataset.faculties.split(',').includes(profile.faculty) && card.dataset.year === profile.year;
-      card.hidden = !matches;
-      if (matches) count++;
-    });
-    document.querySelector('#recommendations-empty').hidden = !profile || count > 0;
-    if (profile) document.querySelector('#profile-summary').textContent = 'الكورسات المعروضة مرتبطة بكليتك وفرقتك التي اخترتها على هذا الجهاز.';
-  }
 })();
