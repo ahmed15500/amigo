@@ -10,7 +10,11 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo test
       - run: cargo build --release
-      - run: cargo run --release -- --export dist
+      - run: rm -rf dist && cargo run --release -- --export dist
+      - name: Verify generated pages match the repository
+        run: |
+          git diff --exit-code -- dist
+          test -z "$(git ls-files --others --exclude-standard dist)"
       - uses: actions/upload-artifact@v4
         with:
           name: amigo-static-pages
