@@ -1,6 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAdmin() { return request.auth != null && request.auth.token.email_verified == true && request.auth.token.email == 'abahrawy20@gmail.com'; }
     function visible() { return 'status' in resource.data && resource.data.status in ['demo', 'published']; }
     match /faculties/{id} { allow read: if visible(); allow write: if false; }
     match /courses/{id} { allow read: if visible(); allow write: if false; }
@@ -21,9 +22,10 @@ service cloud.firestore {
           && validFaculty(request.resource.data.faculty)
           && request.resource.data.year in ['1', '2', '3', '4'];
       }
-      allow get: if isOwner();
+      allow get: if isOwner() || isAdmin();
       allow create, update: if isOwner() && validProfile();
-      allow list, delete: if false;
+      allow list: if isAdmin();
+      allow delete: if false;
     }
   }
 }
