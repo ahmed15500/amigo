@@ -11,3 +11,7 @@ Install stable Rust, run `cargo test`, then `cargo run`; or run `cargo run --rel
 `faculties`, `courses`, and `instructors` are queried by `status in ['demo','published']`. Courses link to multiple faculty and instructor document IDs through arrays. Student documents are keyed by Firebase Auth UID and store name, faculty ID, and year. Each student can only read and write their own validated profile. Deploy and test `firestore.rules` before serving the application. No catalog writes, payments, enrollment, instructor/admin permissions, lesson player, or revenue reports are implemented. Catalog records are public when marked demo or published, so never place private data in those records.
 
 The site is a prototype; institutional names, policies, and course material require verification before public launch.
+
+## Deploy on Vercel
+
+Vercel serves the pre-generated `dist` directory as static files. After changing Rust templates or assets, regenerate it with `rm -rf dist && cargo run --release -- --export dist` and commit the updated output. CI checks that the generated files match.
