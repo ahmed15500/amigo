@@ -1,11 +1,7 @@
+import { app, db, getCatalog } from './firebase-core.js';
+import { populateFaculties, renderCourses } from './catalog.js';
 const relevant = ['register-form', 'login-form', 'reset-form', 'profile-form', 'recommendations'].some(id => document.getElementById(id));
 if (relevant) {
-  const firebaseConfig = {
-    apiKey: 'AIzaSyC1lLFDnMtbwAqgp5VTpKLM63d2A9AYs5o',
-    authDomain: 'amigo-learning.firebaseapp.com',
-    projectId: 'amigo-learning',
-    appId: '1:842416550913:web:8b63ca8452be5e12883c00'
-  };
   const message = (form, text, success = false) => {
     const target = form.querySelector('.form-message');
     if (target) { target.textContent = text; target.classList.toggle('success', success); }
@@ -13,17 +9,15 @@ if (relevant) {
   const busy = (form, value) => { form.querySelector('button[type="submit"]').disabled = value; };
   const profileFrom = form => ({name: form.elements.namedItem('name').value.trim(), faculty: form.elements.namedItem('faculty').value, year: form.elements.namedItem('year').value});
   try {
-    const [appSdk, authSdk, dbSdk] = await Promise.all([
-      import('https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js'),
+    const [authSdk, dbSdk] = await Promise.all([
       import('https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js'),
       import('https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js')
     ]);
-    const app = appSdk.initializeApp(firebaseConfig);
     const auth = authSdk.getAuth(app);
     auth.languageCode = 'ar';
-    const db = dbSdk.getFirestore(app);
     const studentRef = user => dbSdk.doc(db, 'students', user.uid);
     const register = document.getElementById('register-form');
+    if (register) { try { await populateFaculties(register.elements.namedItem('faculty')); } catch (_) { message(register, 'تعذّر تحميل الكليات. حاول مرة أخرى لاحقًا.'); } }
     register?.addEventListener('submit', async event => {
       event.preventDefault();
       const values = profileFrom(register);
@@ -79,6 +73,7 @@ if (relevant) {
         const snapshot = await dbSdk.getDoc(studentRef(user));
         const data = snapshot.exists() ? snapshot.data() : null;
         if (profile) {
+          await populateFaculties(profile.elements.namedItem('faculty'));
           status.textContent = data ? 'بياناتك محفوظة في حسابك.' : 'أكمل بياناتك الدراسية لإظهار الكورسات المناسبة.';
           if (data) { profile.elements.namedItem('name').value = data.name; profile.elements.namedItem('faculty').value = data.faculty; profile.elements.namedItem('year').value = data.year; }
           profile.hidden = false;
@@ -87,12 +82,10 @@ if (relevant) {
         } else {
           status.textContent = `أهلًا ${data.name}، دي الكورسات المناسبة لكليتك وفرقتك.`;
           document.getElementById('dashboard-content').hidden = false;
-          let count = 0;
-          recommendations.querySelectorAll('[data-course]').forEach(card => {
-            const match = card.dataset.faculties.split(',').includes(data.faculty) && card.dataset.year === data.year;
-            card.hidden = !match; if (match) count++;
-          });
-          document.getElementById('recommendations-empty').hidden = count > 0;
+          const catalog = await getCatalog();
+          const matches = catalog.courses.filter(c => Array.isArray(c.facultyIds) && c.facultyIds.includes(data.faculty) && String(c.year) === data.year);
+          renderCourses(recommendations,matches,catalog);
+          document.getElementById('recommendations-empty').hidden = matches.length > 0;
         }
       } catch (_) { status.textContent = 'تعذّر تحميل البيانات. تحقق من الاتصال وحاول مرة أخرى.'; }
     });
