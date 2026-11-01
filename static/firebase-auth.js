@@ -11,7 +11,7 @@ if (relevant) {
     if (target) { target.textContent = text; target.classList.toggle('success', success); }
   };
   const busy = (form, value) => { form.querySelector('button[type="submit"]').disabled = value; };
-  const profileFrom = form => ({name: form.elements.name.value.trim(), faculty: form.elements.faculty.value, year: form.elements.year.value});
+  const profileFrom = form => ({name: form.elements.namedItem('name').value.trim(), faculty: form.elements.namedItem('faculty').value, year: form.elements.namedItem('year').value});
   try {
     const [appSdk, authSdk, dbSdk] = await Promise.all([
       import('https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js'),
@@ -28,11 +28,11 @@ if (relevant) {
       event.preventDefault();
       const values = profileFrom(register);
       if (values.name.length < 2) { message(register, 'اكتب اسمًا من حرفين على الأقل.'); return; }
-      if (register.elements.password.value !== register.elements.confirm.value) { message(register, 'كلمتا المرور غير متطابقتين.'); return; }
+      if (register.elements.namedItem('password').value !== register.elements.namedItem('confirm').value) { message(register, 'كلمتا المرور غير متطابقتين.'); return; }
       busy(register, true); message(register, 'جاري إنشاء الحساب…');
       let user;
       try {
-        const result = await authSdk.createUserWithEmailAndPassword(auth, register.elements.email.value.trim(), register.elements.password.value);
+        const result = await authSdk.createUserWithEmailAndPassword(auth, register.elements.namedItem('email').value.trim(), register.elements.namedItem('password').value);
         user = result.user;
         await dbSdk.setDoc(studentRef(user), values);
         location.assign('/dashboard');
@@ -52,7 +52,7 @@ if (relevant) {
     login?.addEventListener('submit', async event => {
       event.preventDefault(); busy(login, true); message(login, 'جاري تسجيل الدخول…');
       try {
-        await authSdk.signInWithEmailAndPassword(auth, login.elements.email.value.trim(), login.elements.password.value);
+        await authSdk.signInWithEmailAndPassword(auth, login.elements.namedItem('email').value.trim(), login.elements.namedItem('password').value);
         location.assign('/dashboard');
       } catch (_) { message(login, 'تعذّر تسجيل الدخول. تأكد من البيانات والاتصال ثم حاول مرة أخرى.'); }
       finally { busy(login, false); }
@@ -61,7 +61,7 @@ if (relevant) {
     reset?.addEventListener('submit', async event => {
       event.preventDefault(); busy(reset, true); message(reset, 'جاري إرسال الطلب…');
       try {
-        await authSdk.sendPasswordResetEmail(auth, reset.elements.email.value.trim());
+        await authSdk.sendPasswordResetEmail(auth, reset.elements.namedItem('email').value.trim());
         message(reset, 'إذا كان البريد مرتبطًا بحساب، ستصلك رسالة لاستعادة كلمة المرور.', true);
       } catch (_) { message(reset, 'تعذّر إرسال الطلب. تحقق من البريد والاتصال وحاول مرة أخرى.'); }
       finally { busy(reset, false); }
@@ -80,7 +80,7 @@ if (relevant) {
         const data = snapshot.exists() ? snapshot.data() : null;
         if (profile) {
           status.textContent = data ? 'بياناتك محفوظة في حسابك.' : 'أكمل بياناتك الدراسية لإظهار الكورسات المناسبة.';
-          if (data) { profile.elements.name.value = data.name; profile.elements.faculty.value = data.faculty; profile.elements.year.value = data.year; }
+          if (data) { profile.elements.namedItem('name').value = data.name; profile.elements.namedItem('faculty').value = data.faculty; profile.elements.namedItem('year').value = data.year; }
           profile.hidden = false;
         } else if (!data) {
           status.textContent = 'أكمل بياناتك الدراسية أولًا من الملف الشخصي.';
