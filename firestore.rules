@@ -1,7 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function visible() { return resource.data.status in ['demo', 'published']; }
+    function visible() { return 'status' in resource.data && resource.data.status in ['demo', 'published']; }
     match /faculties/{id} { allow read: if visible(); allow write: if false; }
     match /courses/{id} { allow read: if visible(); allow write: if false; }
     match /instructors/{id} { allow read: if visible(); allow write: if false; }
