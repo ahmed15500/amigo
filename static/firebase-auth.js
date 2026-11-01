@@ -1,6 +1,6 @@
 import { app, db, getCatalog } from './firebase-core.js';
 import { populateFaculties, renderCourses } from './catalog.js';
-const relevant = ['register-form', 'login-form', 'reset-form', 'profile-form', 'recommendations'].some(id => document.getElementById(id));
+const relevant = ['register-form', 'login-form', 'reset-form', 'profile-form', 'recommendations', 'course-access'].some(id => document.getElementById(id));
 if (relevant) {
   const message = (form, text, success = false) => {
     const target = form.querySelector('.form-message');
@@ -14,6 +14,20 @@ if (relevant) {
       import('https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js')
     ]);
     const auth = authSdk.getAuth(app);
+    // Only permit a known local return route; never redirect to a supplied external URL.
+    const requested = new URLSearchParams(location.search).get('next');
+    const returnTo = requested === '/courses' || requested === '/courses/' ? '/courses' : '/dashboard';
+    if (returnTo === '/courses') {
+      document.querySelectorAll('a[href="/register"], a[href="/login"]').forEach(link => {
+        link.href = `${link.getAttribute('href')}?next=%2Fcourses`;
+      });
+    }
+    const gate = document.getElementById('course-access');
+    if (gate) authSdk.onAuthStateChanged(auth, user => {
+      if (!user) { location.replace('/login?next=%2Fcourses'); return; }
+      gate.hidden = false;
+      document.getElementById('course-access-status').hidden = true;
+    });
     auth.languageCode = 'ar';
     const studentRef = user => dbSdk.doc(db, 'students', user.uid);
     const register = document.getElementById('register-form');
@@ -29,7 +43,7 @@ if (relevant) {
         const result = await authSdk.createUserWithEmailAndPassword(auth, register.elements.namedItem('email').value.trim(), register.elements.namedItem('password').value);
         user = result.user;
         await dbSdk.setDoc(studentRef(user), values);
-        location.assign('/dashboard');
+        location.assign(returnTo);
       } catch (error) {
         if (user) {
           message(register, 'تم إنشاء الحساب، لكن تعذّر حفظ البيانات الدراسية. سجّل الدخول ثم أكمل ملفك الشخصي.');
@@ -47,7 +61,7 @@ if (relevant) {
       event.preventDefault(); busy(login, true); message(login, 'جاري تسجيل الدخول…');
       try {
         await authSdk.signInWithEmailAndPassword(auth, login.elements.namedItem('email').value.trim(), login.elements.namedItem('password').value);
-        location.assign('/dashboard');
+        location.assign(returnTo);
       } catch (_) { message(login, 'تعذّر تسجيل الدخول. تأكد من البيانات والاتصال ثم حاول مرة أخرى.'); }
       finally { busy(login, false); }
     });
@@ -104,6 +118,8 @@ if (relevant) {
     });
   } catch (_) {
     document.querySelectorAll('.form-message').forEach(node => { node.textContent = 'تعذّر تحميل خدمة الحسابات. تحقق من اتصال الإنترنت وأعد المحاولة.'; });
+    const gateStatus = document.getElementById('course-access-status');
+    if (gateStatus) gateStatus.textContent = 'تعذّر التحقق من تسجيل الدخول. تحقق من الاتصال وأعد المحاولة.';
     ['auth-message', 'profile-summary'].forEach(id => { const node = document.getElementById(id); if (node) node.textContent = 'تعذّر تحميل خدمة الحسابات. تحقق من الاتصال وأعد المحاولة.'; });
   }
 }
