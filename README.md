@@ -26,3 +26,7 @@ Open http://127.0.0.1:3000. Set `AMIGO_BIND=0.0.0.0:3000` only when deliberately
 Replace hard-coded example data and implement a persistent database with a many-to-many `course_faculty` junction and per-faculty academic placement. Add authentication, authorization, an admin and instructor area, course content, progress, payment provider integration, verified purchase entitlements and revenue allocation, account settings, real pricing, contact information, and reviewed legal policies. Nothing here processes payments, provides access control, collects registrations, or issues certificates. Do not put student data or credentials into this demo. Faculty names, courses and claims of affiliation require approval and verification.
 
 Single-course purchase is described as access to the chosen course only; faculty and all-access subscriptions include shared courses. Implement and confirm commercial terms before enabling purchases.
+
+## Static preview
+
+`cargo run --release -- --export dist` generates all currently available pages for static hosting. The student, instructor, admin, account and legal pages marked "preview" are explanatory placeholders; they do not operate as a learning management system. Static export is a separate read-only demo and is not suitable for real registration, payments or private student information.
