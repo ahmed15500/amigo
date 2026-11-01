@@ -19,12 +19,12 @@ if (relevant) {
     const returnTo = requested === '/courses' || requested === '/courses/' ? '/courses' : '/dashboard';
     if (returnTo === '/courses') {
       document.querySelectorAll('a[href="/register"], a[href="/login"]').forEach(link => {
-        link.href = `${link.getAttribute('href')}?next=%2Fcourses`;
+        link.href = `${link.getAttribute('href')}/?next=%2Fcourses`;
       });
     }
     const gate = document.getElementById('course-access');
     if (gate) authSdk.onAuthStateChanged(auth, user => {
-      if (!user) { location.replace('/login?next=%2Fcourses'); return; }
+      if (!user) { location.replace('/login/?next=%2Fcourses'); return; }
       gate.hidden = false;
       document.getElementById('course-access-status').hidden = true;
     });
