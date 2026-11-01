@@ -1,31 +1,25 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isAdmin() { return request.auth != null && request.auth.token.email_verified == true && request.auth.token.email == 'abahrawy20@gmail.com'; }
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && request.auth.token.email_verified == true && request.auth.token.email == 'abahrawy20@gmail.com'; }
     function visible() { return 'status' in resource.data && resource.data.status in ['demo', 'published']; }
-    match /faculties/{id} { allow read: if visible() || isAdmin(); allow write: if false; }
-    match /courses/{id} { allow read: if visible() || isAdmin(); allow write: if false; }
-    match /instructors/{id} { allow read: if visible() || isAdmin(); allow write: if false; }
-    match /students/{uid} {
-      function isOwner() { return request.auth != null && request.auth.uid == uid; }
-      function validFaculty(id) {
-        return id is string && id.size() > 0 && id.size() <= 128
-          && exists(/databases/$(database)/documents/faculties/$(id))
-          && get(/databases/$(database)/documents/faculties/$(id)).data.status in ['demo', 'published'];
-      }
-      function validProfile() {
-        return request.resource.data.keys().hasAll(['name', 'faculty', 'year'])
-          && request.resource.data.keys().hasOnly(['name', 'faculty', 'year'])
-          && request.resource.data.name is string
-          && request.resource.data.name.size() >= 2
-          && request.resource.data.name.size() <= 100
-          && validFaculty(request.resource.data.faculty)
-          && request.resource.data.year in ['1', '2', '3', '4'];
-      }
-      allow get: if isOwner() || isAdmin();
-      allow create, update: if isOwner() && validProfile();
-      allow list: if isAdmin();
-      allow delete: if false;
+    match /faculties/{id} { allow read: if visible() || isAdmin(); allow write: if isAdmin(); }
+    match /courses/{id} {
+      allow read: if visible() || isAdmin(); allow write: if isAdmin();
+      match /lessons/{lessonId} { allow read: if isAdmin() || (signedIn() && resource.data.status == 'published'); allow write: if isAdmin(); }
     }
+    match /instructors/{id} { allow read: if visible() || isAdmin(); allow write: if isAdmin(); }
+    match /students/{uid} {
+      function isOwner() { return signedIn() && request.auth.uid == uid; }
+      function validFaculty(id) { return id is string && id.size() > 0 && id.size() <= 128 && exists(/databases/$(database)/documents/faculties/$(id)); }
+      function validProfile() { return request.resource.data.keys().hasAll(['name', 'faculty', 'year']) && request.resource.data.keys().hasOnly(['name', 'faculty', 'year']) && request.resource.data.name is string && request.resource.data.name.size() >= 2 && request.resource.data.name.size() <= 100 && validFaculty(request.resource.data.faculty) && request.resource.data.year in ['1', '2', '3', '4']; }
+      allow get: if isOwner() || isAdmin(); allow create, update: if (isOwner() && validProfile()) || isAdmin(); allow list, delete: if isAdmin();
+    }
+    match /enrollments/{id} { allow read: if isAdmin() || (signedIn() && resource.data.studentId == request.auth.uid); allow write: if isAdmin(); }
+    match /coupons/{id} { allow read, write: if isAdmin(); }
+    match /announcements/{id} { allow read: if signedIn() || isAdmin(); allow write: if isAdmin(); }
+    match /invoices/{id} { allow read: if isAdmin() || (signedIn() && resource.data.studentId == request.auth.uid); allow write: if isAdmin(); }
+    match /activityLogs/{id} { allow read, write: if isAdmin(); }
   }
 }

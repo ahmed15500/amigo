@@ -1,61 +1,35 @@
 import { app, db } from './firebase-core.js';
-
-const ADMIN_EMAIL = 'abahrawy20@gmail.com';
-const safe = value => String(value ?? '—').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const statusLabel = value => value === 'published' ? 'منشور' : value === 'demo' ? 'تجريبي' : value || 'غير محدد';
-
-try {
-  const [authSdk, dbSdk] = await Promise.all([
-    import('https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js'),
-    import('https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js')
-  ]);
-  const auth = authSdk.getAuth(app);
-  authSdk.onAuthStateChanged(auth, async user => {
-    if (!user || user.email?.toLowerCase() !== ADMIN_EMAIL) {
-      location.replace(`/login?next=${encodeURIComponent('/admin/users')}`);
-      return;
-    }
-    document.getElementById('admin-email').textContent = user.email;
-    try {
-      const [studentSnap, courseSnap, facultySnap, instructorSnap] = await Promise.all([
-        dbSdk.getDocs(dbSdk.collection(db, 'students')),
-        dbSdk.getDocs(dbSdk.collection(db, 'courses')),
-        dbSdk.getDocs(dbSdk.collection(db, 'faculties')),
-        dbSdk.getDocs(dbSdk.collection(db, 'instructors'))
-      ]);
-      const students = studentSnap.docs.map(row => ({id: row.id, ...row.data()}));
-      const courses = courseSnap.docs.map(row => ({id: row.id, ...row.data()}));
-      const faculties = facultySnap.docs.map(row => ({id: row.id, ...row.data()}));
-      const instructors = instructorSnap.docs.map(row => ({id: row.id, ...row.data()}));
-      document.getElementById('student-count').textContent = students.length;
-      document.getElementById('course-count').textContent = courses.length;
-      document.getElementById('faculty-count').textContent = faculties.length;
-      document.getElementById('instructor-count').textContent = instructors.length;
-      document.getElementById('published-count').textContent = courses.filter(item => item.status === 'published').length;
-      const names = Object.fromEntries(faculties.map(item => [item.id, item.name || item.id]));
-      const filter = document.getElementById('student-faculty-filter');
-      filter.innerHTML = '<option value="">كل الكليات</option>' + faculties.map(item => `<option value="${safe(item.id)}">${safe(item.name || item.id)}</option>`).join('');
-      const renderStudents = () => {
-        const search = document.getElementById('student-search').value.trim().toLowerCase();
-        const faculty = filter.value;
-        const matches = students.filter(item => (!faculty || item.faculty === faculty) && (!search || `${item.name || ''} ${item.year || ''} ${names[item.faculty] || item.faculty || ''}`.toLowerCase().includes(search)));
-        document.getElementById('student-result-count').textContent = `${matches.length} من ${students.length} طالب`;
-        document.getElementById('student-rows').innerHTML = matches.map(item => `<tr><td>${safe(item.name)}</td><td>${safe(names[item.faculty] || item.faculty)}</td><td>${safe(item.year)}</td><td><span class="admin-pill">نشط</span></td></tr>`).join('') || '<tr><td colspan="4">لا توجد نتائج مطابقة.</td></tr>';
-      };
-      const renderCourses = () => {
-        document.getElementById('course-rows').innerHTML = courses.slice(0, 8).map(item => `<tr><td>${safe(item.title)}</td><td>${safe(item.level)}</td><td><span class="admin-pill ${item.status === 'published' ? 'published' : ''}">${safe(statusLabel(item.status))}</span></td></tr>`).join('') || '<tr><td colspan="3">لا توجد كورسات بعد.</td></tr>';
-      };
-      document.getElementById('student-search').addEventListener('input', renderStudents);
-      filter.addEventListener('change', renderStudents);
-      document.querySelectorAll('[data-admin-tab]').forEach(button => button.addEventListener('click', () => {
-        document.querySelectorAll('[data-admin-view]').forEach(view => view.hidden = view.dataset.adminView !== button.dataset.adminTab);
-        document.querySelectorAll('[data-admin-tab]').forEach(tab => tab.classList.toggle('active', tab === button));
-      }));
-      renderStudents(); renderCourses();
-      document.getElementById('admin-panel').hidden = false;
-      document.getElementById('admin-status').hidden = true;
-    } catch (_) {
-      document.getElementById('admin-status').textContent = 'تعذّر تحميل بيانات الإدارة. تأكد من قواعد Firestore ثم حدّث الصفحة.';
-    }
-  });
-} catch (_) { document.getElementById('admin-status').textContent = 'تعذّر تشغيل لوحة الإدارة.'; }
+const ADMIN='abahrawy20@gmail.com', $=s=>document.querySelector(s), esc=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cash=v=>new Intl.NumberFormat('ar-EG',{style:'currency',currency:'EGP',maximumFractionDigits:0}).format(+v||0), when=v=>v?.toDate?v.toDate().toLocaleDateString('ar-EG'):v?new Date(v).toLocaleDateString('ar-EG'):'—';
+try { const [A,F]=await Promise.all([import('https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js')]); const auth=A.getAuth(app); let s={};
+ const cols=['students','courses','faculties','instructors','coupons','announcements','enrollments','invoices','activityLogs'];
+ const read=n=>F.getDocs(F.collection(db,n)).then(x=>x.docs.map(d=>({id:d.id,...d.data()})));
+ const note=(m,ok=true)=>{const n=$('#admin-feedback');n.textContent=m;n.className='admin-feedback '+(ok?'success':'error')};
+ const audit=(action,entity,entityId,detail='')=>F.addDoc(F.collection(db,'activityLogs'),{action,entity,entityId,detail,actorEmail:auth.currentUser.email,createdAt:F.serverTimestamp()});
+ const options=()=>'<option value="">اختر كورسًا</option>'+s.courses.map(c=>`<option value="${esc(c.id)}">${esc(c.title)}</option>`).join('');
+ function render(){const paid=s.invoices.filter(x=>x.status==='paid'),total=paid.reduce((n,x)=>n+(+x.amount||0),0), enroll=c=>s.enrollments.filter(e=>e.courseId===c).length;
+  $('#student-count').textContent=s.students.length;$('#course-count').textContent=s.courses.length;$('#instructor-count').textContent=s.instructors.length;document.querySelectorAll('#revenue-count').forEach(x=>x.textContent=cash(total));document.querySelectorAll('#enrollment-count').forEach(x=>x.textContent=s.enrollments.length);$('#published-count').textContent=s.courses.filter(c=>c.status==='published').length;
+  $('#course-id').innerHTML=options();$('#enrollment-course').innerHTML=options();$('#announcement-course').innerHTML='<option value="all">كل الطلاب</option>'+options().replace('<option value="">اختر كورسًا</option>','');
+  $('#students-rows').innerHTML=s.students.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.email||x.id)}</td><td>${esc(x.faculty)}</td><td>${esc(x.year)}</td></tr>`).join('')||'<tr><td colspan="4">لا يوجد طلاب بعد.</td></tr>';
+  $('#course-rows').innerHTML=s.courses.map(x=>`<tr><td>${esc(x.title)}</td><td>${esc(x.level)}</td><td>${x.price?cash(x.price):'مجاني'}</td><td>${esc(x.status||'draft')}</td><td><button class="admin-inline" data-delete-course="${esc(x.id)}">حذف</button></td></tr>`).join('')||'<tr><td colspan="5">لا يوجد كورسات بعد.</td></tr>';
+  $('#instructor-rows').innerHTML=s.instructors.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.email)}</td><td>${esc(x.specialty)}</td><td>${esc(x.status||'invited')}</td></tr>`).join('')||'<tr><td colspan="4">أضف أول محاضر.</td></tr>';
+  $('#coupon-rows').innerHTML=s.coupons.map(x=>`<tr><td>${esc(x.code)}</td><td>${x.type==='percent'?esc(x.value)+'%':cash(x.value)}</td><td>${esc(x.status||'active')}</td><td>${when(x.expiresAt)}</td></tr>`).join('')||'<tr><td colspan="4">لا توجد كوبونات.</td></tr>';
+  $('#announcement-rows').innerHTML=s.announcements.slice(0,10).map(x=>`<tr><td>${esc(x.title)}</td><td>${esc(x.audience||'all')}</td><td>${when(x.createdAt)}</td></tr>`).join('')||'<tr><td colspan="3">لا توجد إعلانات.</td></tr>';
+  $('#enrollment-rows').innerHTML=s.enrollments.slice(0,30).map(x=>`<tr><td>${esc(x.studentName||x.studentId)}</td><td>${esc(s.courses.find(c=>c.id===x.courseId)?.title||x.courseId)}</td><td>${esc(x.progress||0)}%</td><td>${esc(x.attendance||0)}%</td><td>${esc(x.status||'active')}</td></tr>`).join('')||'<tr><td colspan="5">لا يوجد تسجيلات بعد.</td></tr>';
+  $('#invoice-rows').innerHTML=s.invoices.slice(0,20).map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.studentEmail||x.studentId)}</td><td>${cash(x.amount)}</td><td>${esc(x.status||'pending')}</td><td>${when(x.createdAt)}</td></tr>`).join('')||'<tr><td colspan="5">لا توجد فواتير.</td></tr>';
+  $('#log-rows').innerHTML=s.activityLogs.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,30).map(x=>`<tr><td>${esc(x.actorEmail)}</td><td>${esc(x.action)}</td><td>${esc(x.entity)}</td><td>${when(x.createdAt)}</td></tr>`).join('')||'<tr><td colspan="4">سيظهر سجل العمليات هنا.</td></tr>';
+  $('#popular-courses').innerHTML=s.courses.map(x=>({title:x.title,n:enroll(x.id)})).sort((a,b)=>b.n-a.n).slice(0,5).map(x=>`<li>${esc(x.title)} <b>${x.n} تسجيل</b></li>`).join('')||'<li>لا توجد بيانات كافية بعد.</li>';
+ }
+ async function refresh(){const a=await Promise.all(cols.map(read));s=Object.fromEntries(cols.map((x,i)=>[x,a[i]]));render()}
+ async function add(form,col,data,label){const r=await F.addDoc(F.collection(db,col),{...data,createdAt:F.serverTimestamp(),updatedAt:F.serverTimestamp()});await audit('إنشاء '+label,col,r.id,data.title||data.name||data.code||'');form.reset();await refresh();note('تم حفظ '+label)}
+ A.onAuthStateChanged(auth,async u=>{if(!u||u.email?.toLowerCase()!==ADMIN){location.replace('/login?next='+encodeURIComponent('/admin/users'));return}$('#admin-email').textContent=u.email;try{await refresh();$('#admin-panel').hidden=false;$('#admin-status').hidden=true}catch(e){console.error(e);$('#admin-status').textContent='تعذّر تحميل بيانات الإدارة. حدّث قواعد Firestore ثم أعد المحاولة.';return}
+  document.querySelectorAll('[data-admin-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-admin-view]').forEach(v=>v.hidden=v.dataset.adminView!==b.dataset.adminTab);document.querySelectorAll('[data-admin-tab]').forEach(v=>v.classList.toggle('active',v===b))});
+  $('#course-form').onsubmit=async e=>{e.preventDefault();let f=e.currentTarget;await add(f,'courses',{title:f.title.value.trim(),level:f.level.value,price:+f.price.value||0,status:f.status.value,facultyIds:f.facultyIds.value.split(',').filter(Boolean),instructorId:f.instructorId.value.trim()},'الكورس')};
+  $('#lesson-form').onsubmit=async e=>{e.preventDefault();let f=e.currentTarget;if(!f.courseId.value)return note('اختر الكورس أولًا.',false);let r=await F.addDoc(F.collection(db,'courses',f.courseId.value,'lessons'),{title:f.title.value.trim(),type:f.type.value,contentUrl:f.contentUrl.value.trim(),position:+f.position.value||0,status:'published',createdAt:F.serverTimestamp()});await audit('إضافة درس أو ملف','lesson',r.id,f.title.value);f.reset();note('تمت إضافة الدرس أو رابط الملف.')};
+  $('#instructor-form').onsubmit=async e=>{e.preventDefault();let f=e.currentTarget;await add(f,'instructors',{name:f.name.value.trim(),email:f.email.value.trim().toLowerCase(),specialty:f.specialty.value.trim(),status:'invited',role:'instructor'},'دعوة المحاضر')};
+  $('#coupon-form').onsubmit=async e=>{e.preventDefault();let f=e.currentTarget;await add(f,'coupons',{code:f.code.value.trim().toUpperCase(),type:f.type.value,value:+f.value.value,status:'active',expiresAt:f.expiresAt.value?new Date(f.expiresAt.value):null},'الكوبون')};
+  $('#announcement-form').onsubmit=async e=>{e.preventDefault();let f=e.currentTarget;await add(f,'announcements',{title:f.title.value.trim(),body:f.body.value.trim(),audience:f.audience.value,courseId:f.courseId.value||null,status:'published'},'الإعلان')};
+  $('#enrollment-form').onsubmit=async e=>{e.preventDefault();let f=e.currentTarget,q=f.studentId.value.trim().toLowerCase(),st=s.students.find(x=>x.id===q||String(x.email||'').toLowerCase()===q);if(!st)return note('أدخل معرّف الطالب أو بريده المسجل.',false);await add(f,'enrollments',{studentId:st.id,studentName:st.name||'',courseId:f.courseId.value,progress:0,attendance:0,status:'active',source:'admin'},'تسجيل الطالب')};
+  document.addEventListener('click',async e=>{let x=e.target.dataset.deleteCourse;if(!x||!confirm('حذف الكورس؟ لن يحذف الدروس تلقائيًا.'))return;await F.deleteDoc(F.doc(db,'courses',x));await audit('حذف كورس','courses',x);await refresh();note('تم حذف الكورس.')});
+ });
+} catch(e){console.error(e);document.getElementById('admin-status').textContent='تعذّر تشغيل لوحة الإدارة.'}
