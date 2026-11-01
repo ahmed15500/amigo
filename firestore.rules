@@ -1,15 +1,24 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function visible() { return resource.data.status in ['demo', 'published']; }
+    match /faculties/{id} { allow read: if visible(); allow write: if false; }
+    match /courses/{id} { allow read: if visible(); allow write: if false; }
+    match /instructors/{id} { allow read: if visible(); allow write: if false; }
     match /students/{uid} {
       function isOwner() { return request.auth != null && request.auth.uid == uid; }
+      function validFaculty(id) {
+        return id is string && id.size() > 0 && id.size() <= 128
+          && exists(/databases/$(database)/documents/faculties/$(id))
+          && get(/databases/$(database)/documents/faculties/$(id)).data.status in ['demo', 'published'];
+      }
       function validProfile() {
         return request.resource.data.keys().hasAll(['name', 'faculty', 'year'])
           && request.resource.data.keys().hasOnly(['name', 'faculty', 'year'])
           && request.resource.data.name is string
           && request.resource.data.name.size() >= 2
           && request.resource.data.name.size() <= 100
-          && request.resource.data.faculty in ['business', 'engineering', 'pharmacy', 'agriculture']
+          && validFaculty(request.resource.data.faculty)
           && request.resource.data.year in ['1', '2', '3', '4'];
       }
       allow get: if isOwner();
