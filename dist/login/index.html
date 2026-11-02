@@ -12,12 +12,12 @@
     .login-header .nav{height:86px}.login-header .logo{color:#fff}
     .login-page main{min-height:100vh}
     .login-collage{min-height:100vh;display:grid;grid-template-columns:1.07fr .93fr;position:relative;overflow:hidden;background:#154ad1}
-    .collage-photos{display:grid;grid-template-columns:1.15fr .85fr;min-height:100vh;gap:8px;padding:8px;direction:ltr}
-    .photo{position:relative;overflow:hidden;border-radius:18px;background:#254a8d}
+    .collage-photos{display:grid;grid-template-columns:1.15fr .85fr;min-height:100vh;gap:3px;padding:3px;direction:ltr}
+    .photo{position:relative;overflow:hidden;border-radius:15px;background:#254a8d}
     .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,39,95,.02) 35%,rgba(10,31,82,.44))}
     .photo img{width:100%;height:100%;display:block;object-fit:cover;transition:transform .7s ease}
     .photo:hover img{transform:scale(1.04)}
-    .photo-main{min-height:calc(100vh - 16px)}
+    .photo-main{min-height:calc(100vh - 6px)}
     .photo-main img{object-position:54% center}
     .photo-side{display:block}.photo-side .photo{height:100%}
     .photo-side img{object-position:center}
@@ -34,10 +34,8 @@
     .login-box .form-message{margin:15px 0 0;text-align:center}
     .login-note{display:flex;align-items:center;gap:9px;margin-top:28px;color:#71809b;font-size:12px;font-weight:700}
     .login-note i{width:8px;height:8px;border-radius:50%;background:#ff8b56;display:block;flex:none}
-    .floating-tag{position:absolute;z-index:2;left:-37px;top:25%;background:#fff;color:#153a82;border-radius:14px;padding:12px 17px;box-shadow:0 14px 28px rgba(29,66,140,.17);font-size:13px;font-weight:800;transform:rotate(-4deg)}
-    .floating-tag span{color:#ff715f;font-size:19px;margin-left:6px}
     @media(max-width:850px){
-      .login-header .logo{color:#12316e}.login-collage{display:block;background:#f8fbff}.collage-photos{min-height:300px;height:40vh;padding:7px}.photo-main{min-height:0}.photo-side{display:block}.login-panel{padding:48px 20px 42px;min-height:auto}.login-box{padding:32px 25px}.floating-tag{display:none}
+      .login-header .logo{color:#12316e}.login-collage{display:block;background:#f8fbff}.collage-photos{min-height:300px;height:40vh;padding:3px}.photo-main{min-height:0}.photo-side{display:block}.login-panel{padding:48px 20px 42px;min-height:auto}.login-box{padding:32px 25px}
     }
     @media(max-width:480px){.login-header .nav{height:70px}.login-box h1{font-size:34px}.collage-photos{height:270px}}
   </style>
@@ -55,11 +53,10 @@
           <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=860&q=68" alt="" fetchpriority="high">
         </div>
         <div class="photo-side">
-          <div class="photo"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=660&q=68" alt="" fetchpriority="high"></div>
+          <div class="photo"><img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=660&q=68" alt="" fetchpriority="high"></div>
         </div>
       </div>
       <div class="login-panel">
-        <div class="floating-tag"><span>✦</span> خطوتك الجاية تبدأ هنا</div>
         <div class="login-box">
           <div class="eyebrow">دخول آمن وسريع</div>
           <h1>أهلًا بيك.</h1>
