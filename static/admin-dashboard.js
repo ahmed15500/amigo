@@ -20,9 +20,16 @@ try { const [A,F]=await Promise.all([import('https://www.gstatic.com/firebasejs/
   $('#log-rows').innerHTML=s.activityLogs.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,30).map(x=>`<tr><td>${esc(x.actorEmail)}</td><td>${esc(x.action)}</td><td>${esc(x.entity)}</td><td>${when(x.createdAt)}</td></tr>`).join('')||'<tr><td colspan="4">سيظهر سجل العمليات هنا.</td></tr>';
   $('#popular-courses').innerHTML=s.courses.map(x=>({title:x.title,n:enroll(x.id)})).sort((a,b)=>b.n-a.n).slice(0,5).map(x=>`<li>${esc(x.title)} <b>${x.n} تسجيل</b></li>`).join('')||'<li>لا توجد بيانات كافية بعد.</li>';
  }
- async function refresh(){const a=await Promise.all(cols.map(read));s=Object.fromEntries(cols.map((x,i)=>[x,a[i]]));render()}
+ async function refresh(){
+  const results=await Promise.allSettled(cols.map(read));
+  s=Object.fromEntries(cols.map((name,i)=>[name,results[i].status==='fulfilled'?results[i].value:[]]));
+  const denied=results.filter(x=>x.status==='rejected');
+  if(denied.length===cols.length) throw denied[0].reason;
+  render();
+  if(denied.length) note('تم عرض البيانات المتاحة؛ بعض الأقسام تحتاج مراجعة صلاحيات Firestore.',false);
+ }
  async function add(form,col,data,label){const r=await F.addDoc(F.collection(db,col),{...data,createdAt:F.serverTimestamp(),updatedAt:F.serverTimestamp()});await audit('إنشاء '+label,col,r.id,data.title||data.name||data.code||'');form.reset();await refresh();note('تم حفظ '+label)}
- A.onAuthStateChanged(auth,async u=>{if(!u||u.email?.toLowerCase()!==ADMIN){location.replace('/login?next='+encodeURIComponent('/admin/users'));return}$('#admin-email').textContent=u.email;try{await refresh();$('#admin-panel').hidden=false;$('#admin-status').hidden=true}catch(e){console.error(e);$('#admin-status').textContent='تعذّر تحميل بيانات الإدارة. حدّث قواعد Firestore ثم أعد المحاولة.';return}
+ A.onAuthStateChanged(auth,async u=>{if(!u||u.email?.toLowerCase()!==ADMIN){location.replace('/login?next='+encodeURIComponent('/admin/users'));return}$('#admin-email').textContent=u.email;try{await u.getIdToken(true);await refresh();$('#admin-panel').hidden=false;$('#admin-status').hidden=true}catch(e){console.error(e);const code=e?.code||'';$('#admin-status').textContent=code.includes('permission-denied')?'صلاحيات Firestore تمنع الوصول إلى بيانات الإدارة. جارٍ استخدام قواعد الأدمن الصحيحة؛ حدّث الصفحة بعد نشرها.':'تعذّر تحميل بيانات الإدارة. تحقق من الاتصال ثم أعد المحاولة.';return}
   document.querySelectorAll('[data-admin-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-admin-view]').forEach(v=>v.hidden=v.dataset.adminView!==b.dataset.adminTab);document.querySelectorAll('[data-admin-tab]').forEach(v=>v.classList.toggle('active',v===b))});
   $('#course-form').onsubmit=async e=>{e.preventDefault();let f=e.currentTarget;await add(f,'courses',{title:f.title.value.trim(),level:f.level.value,price:+f.price.value||0,status:f.status.value,facultyIds:f.facultyIds.value.split(',').filter(Boolean),instructorId:f.instructorId.value.trim()},'الكورس')};
   $('#lesson-form').onsubmit=async e=>{e.preventDefault();let f=e.currentTarget;if(!f.courseId.value)return note('اختر الكورس أولًا.',false);let r=await F.addDoc(F.collection(db,'courses',f.courseId.value,'lessons'),{title:f.title.value.trim(),type:f.type.value,contentUrl:f.contentUrl.value.trim(),position:+f.position.value||0,status:'published',createdAt:F.serverTimestamp()});await audit('إضافة درس أو ملف','lesson',r.id,f.title.value);f.reset();note('تمت إضافة الدرس أو رابط الملف.')};
