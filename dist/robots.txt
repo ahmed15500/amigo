@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /student/
+Disallow: /instructor/
+Disallow: /checkout/
+Disallow: /login/
+Disallow: /register/
+Disallow: /reset-password/
+
+Sitemap: https://amigo-gilt-nine.vercel.app/sitemap.xml
