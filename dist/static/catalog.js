@@ -15,6 +15,7 @@ document.addEventListener('error', event => {
 }, true);
 const facultyNames = (course, data) => arr(course.facultyIds).map(id => data.faculties.find(f => f.id === id)?.name).filter(Boolean);
 const teacherNames = (course, data) => arr(course.instructorIds).map(id => data.instructors.find(i => i.id === id)?.displayName).filter(Boolean);
+const teacherAvatar = (course, data) => { const t = arr(course.instructorIds).map(id => data.instructors.find(i => i.id === id)).find(x => x && x.photoUrl); return t ? `<img class="card-teacher-photo" src="${esc(t.photoUrl)}" alt="${esc(t.displayName || '')}" loading="lazy">` : ''; };
 const teacherChips = (course, data, cls='') => { const list = arr(course.instructorIds).map(id => data.instructors.find(i => i.id === id)).filter(Boolean); return list.length ? `<div class="teachers ${cls}">` + list.map(t => `<span class="teacher">${t.photoUrl ? `<img src="${esc(t.photoUrl)}" alt="" loading="lazy">` : ''}<span>${esc(t.displayName || '')}</span></span>`).join('') + '</div>' : ''; };
 const shared = course => arr(course.facultyIds).length > 1;
 const courseLink = c => '/course/?id=' + encodeURIComponent(c.id);
@@ -22,7 +23,7 @@ const facultyLink = f => '/faculty/?id=' + encodeURIComponent(f.id);
 export function renderCourses(element, courses, data) {
   element.innerHTML = courses.map(c => {
     const link = esc(courseLink(c));
-    return `<article class="course-card"><a class="course-art ${shared(c)?'art-orange':'art-teal'}" href="${link}">${image(c.imageUrl,'catalog-image course-image')}<span class="course-badge">${shared(c)?'مشترك':'تخصصي'}</span><span class="art-mark">✳</span></a><div class="card-body"><div class="meta"><span>${shared(c)?'مشترك':'تخصصي'}</span><span>${esc(c.level || '')}</span></div><h3><a href="${link}">${esc(c.title || 'كورس')}</a></h3><p>${esc(c.description || '')}</p>${teacherChips(c,data)}<div class="course-foot"><a href="${link}" aria-label="تفاصيل الكورس">←</a></div></div></article>`;
+    return `<article class="course-card"><a class="course-art ${shared(c)?'art-orange':'art-teal'}" href="${link}">${image(c.imageUrl,'catalog-image course-image')}<span class="course-badge">${shared(c)?'مشترك':'تخصصي'}</span><span class="art-mark">✳</span>${teacherAvatar(c,data)}</a><div class="card-body"><div class="meta"><span>${shared(c)?'مشترك':'تخصصي'}</span><span>${esc(c.level || '')}</span></div><h3><a href="${link}">${esc(c.title || 'كورس')}</a></h3><p>${esc(c.description || '')}</p>${teacherChips(c,data)}<div class="course-foot"><a href="${link}" aria-label="تفاصيل الكورس">←</a></div></div></article>`;
   }).join('');
 }
 export async function populateFaculties(select) {

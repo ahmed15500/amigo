@@ -29,3 +29,6 @@ body{background:var(--cream);color:var(--ink)}
 .teachers-lg .teacher{padding:6px 16px 6px 7px}
 .teachers-lg .teacher img{width:46px;height:46px}
 .teachers-lg .teacher span{font-size:16px}
+
+.card-teacher-photo{position:absolute;bottom:10px;inset-inline-end:10px;width:54px;height:54px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 14px rgba(23,59,50,.35);background:#fff;z-index:2}
+.teachers-lg .teacher img{width:64px;height:64px}
