@@ -21,3 +21,11 @@ body{background:var(--cream);color:var(--ink)}
 /* Optional catalogue media comes from the Firestore records. */
 .course-art{position:relative;isolation:isolate}.course-art .course-image,.enroll-art .course-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}.course-art .course-badge{position:relative;z-index:2;background:rgba(255,255,255,.94)!important;color:#16305f;box-shadow:0 4px 14px #10275717}.course-art .art-mark{position:relative;z-index:0}.enroll-art{position:relative;overflow:hidden}.enroll-art>span{position:relative;z-index:0}.catalog-image[hidden]{display:none!important}.instructor-photo{position:relative;width:94px;height:94px;overflow:hidden;border-radius:50%;background:#e9e5ff;color:#6a50e7;display:grid;place-items:center;font-size:34px;margin-bottom:18px;flex:none}.instructor-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .course-art .course-badge{border-radius:20px;padding:4px 11px;font-size:11px;font-weight:800}
+
+.teachers{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.teacher{display:inline-flex;align-items:center;gap:8px;background:#f4efe4;border:1px solid #e2dac6;border-radius:999px;padding:4px 12px 4px 5px}
+.teacher img{width:34px;height:34px;border-radius:50%;object-fit:cover;display:block}
+.teacher span{font-weight:700;font-size:14px;color:#173b32}
+.teachers-lg .teacher{padding:6px 16px 6px 7px}
+.teachers-lg .teacher img{width:46px;height:46px}
+.teachers-lg .teacher span{font-size:16px}
