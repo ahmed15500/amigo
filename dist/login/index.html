@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>الدخول | Amigo</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://images.unsplash.com" crossorigin><link rel="stylesheet" href="/static/style.css">
   <script type="module" src="/static/firebase-auth.js"></script>
   <style>
     body.login-page{background:#f7f8ff;color:#132d62}
@@ -19,11 +19,8 @@
     .photo:hover img{transform:scale(1.04)}
     .photo-main{min-height:calc(100vh - 16px)}
     .photo-main img{object-position:54% center}
-    .photo-side{display:grid;grid-template-rows:1fr .78fr;gap:8px}
+    .photo-side{display:block}.photo-side .photo{height:100%}
     .photo-side img{object-position:center}
-    .photo-caption{position:absolute;z-index:2;bottom:34px;right:34px;left:26px;color:#fff}
-    .photo-caption strong{display:block;font-size:clamp(25px,3vw,45px);line-height:1.22;font-weight:900;max-width:480px}
-    .photo-caption span{display:block;margin-top:10px;color:#e4edff;font-weight:700;font-size:14px}
     .login-panel{display:flex;align-items:center;justify-content:center;position:relative;padding:110px 42px 46px;background:linear-gradient(135deg,#fdf9f6 0%,#f2f6ff 100%)}
     .login-panel::before,.login-panel::after{content:"";position:absolute;border-radius:50%;filter:blur(.2px);pointer-events:none}
     .login-panel::before{width:270px;height:270px;background:#d9e6ff;top:-95px;left:-110px}
@@ -40,9 +37,9 @@
     .floating-tag{position:absolute;z-index:2;left:-37px;top:25%;background:#fff;color:#153a82;border-radius:14px;padding:12px 17px;box-shadow:0 14px 28px rgba(29,66,140,.17);font-size:13px;font-weight:800;transform:rotate(-4deg)}
     .floating-tag span{color:#ff715f;font-size:19px;margin-left:6px}
     @media(max-width:850px){
-      .login-header .logo{color:#12316e}.login-collage{display:block;background:#f8fbff}.collage-photos{min-height:300px;height:40vh;padding:7px}.photo-main{min-height:0}.photo-caption{bottom:22px;right:22px}.photo-caption strong{font-size:29px}.photo-side{grid-template-rows:1fr 1fr}.login-panel{padding:48px 20px 42px;min-height:auto}.login-box{padding:32px 25px}.floating-tag{display:none}
+      .login-header .logo{color:#12316e}.login-collage{display:block;background:#f8fbff}.collage-photos{min-height:300px;height:40vh;padding:7px}.photo-main{min-height:0}.photo-side{display:block}.login-panel{padding:48px 20px 42px;min-height:auto}.login-box{padding:32px 25px}.floating-tag{display:none}
     }
-    @media(max-width:480px){.login-header .nav{height:70px}.login-box h1{font-size:34px}.collage-photos{height:270px}.photo-caption span{display:none}.photo-caption strong{font-size:24px}}
+    @media(max-width:480px){.login-header .nav{height:70px}.login-box h1{font-size:34px}.collage-photos{height:270px}}
   </style>
 </head>
 <body class="login-page">
@@ -55,15 +52,10 @@
     <section class="login-collage" aria-label="الدخول إلى Amigo">
       <div class="collage-photos" aria-hidden="true">
         <div class="photo photo-main">
-          <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=85" alt="">
-          <div class="photo-caption">
-            <strong>تعليمك… على مقاس طموحك.</strong>
-            <span>كورسات مختارة، وخطوات واضحة نحو هدفك.</span>
-          </div>
+          <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=860&q=68" alt="" fetchpriority="high">
         </div>
         <div class="photo-side">
-          <div class="photo"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=85" alt=""></div>
-          <div class="photo"><img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=85" alt=""></div>
+          <div class="photo"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=660&q=68" alt="" fetchpriority="high"></div>
         </div>
       </div>
       <div class="login-panel">
