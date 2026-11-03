@@ -32,3 +32,18 @@ body{background:var(--cream);color:var(--ink)}
 
 .card-teacher-photo{position:absolute;bottom:10px;inset-inline-end:10px;width:54px;height:54px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 14px rgba(23,59,50,.35);background:#fff;z-index:2}
 .teachers-lg .teacher img{width:64px;height:64px}
+.aud-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.aud-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:30px;display:flex;flex-direction:column;gap:12px}
+.aud-card h3{margin:0;font-size:24px;font-weight:900}
+.aud-card p{margin:0;color:var(--muted);line-height:1.9}
+.aud-card .btn{margin-top:auto;align-self:flex-start}
+.aud-card.pro{background:var(--dark);border-color:var(--dark);color:#fff}
+.aud-card.pro p{color:#cfddd2}
+.aud-icon{font-size:32px;line-height:1}
+.aud-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.aud-tab{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 22px;font-weight:800;font-size:14px;color:var(--ink)}
+.aud-tab:hover{border-color:#aebfb3}
+.aud-tab.active{background:var(--dark);color:#fff;border-color:var(--dark)}
+.aud-tag{background:#eef4ec;border-radius:999px;padding:1px 10px;font-size:12px;font-weight:700;color:#496154}
+.aud-tag.pro{background:#fdeadb;color:#9a5518}
+@media(max-width:760px){.aud-grid{grid-template-columns:1fr}}
