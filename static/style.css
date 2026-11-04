@@ -47,3 +47,21 @@ body{background:var(--cream);color:var(--ink)}
 .aud-tag{background:#eef4ec;border-radius:999px;padding:1px 10px;font-size:12px;font-weight:700;color:#496154}
 .aud-tag.pro{background:#fdeadb;color:#9a5518}
 @media(max-width:760px){.aud-grid{grid-template-columns:1fr}}
+
+/* UI/UX Pro Max pass — accessibility, touch targets, motion (2026-11-04). */
+:focus-visible{outline:3px solid #2767ff;outline-offset:2px;border-radius:6px}
+::selection{background:#ffe1de}
+.nav-links a{padding-top:10px;padding-bottom:10px}
+.login{padding-top:10px;padding-bottom:10px}
+.menu-toggle{min-height:44px;padding:8px 12px}
+.aud-tab{min-height:44px;display:inline-flex;align-items:center;transition:background .2s,border-color .2s,color .2s}
+.reset{min-height:44px;padding:6px 12px}
+.chips a{min-height:36px;display:inline-flex;align-items:center}
+.course-foot a{padding:8px;margin:-8px}
+.course-card{transition:transform .25s ease,box-shadow .25s ease}
+.course-card:hover{transform:translateY(-4px)}
+.btn:active{transform:translateY(0) scale(.98)}
+.course-foot{color:#63755f}
+.results-head span{color:#5f7268}
+.group-heading span{color:#5f7268}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
