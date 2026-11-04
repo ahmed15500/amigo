@@ -80,7 +80,7 @@ fn export_static(root: &str) -> std::io::Result<()> {
  std::fs::write(base.join("robots.txt"),ROBOTS_TXT)?;
  std::fs::write(base.join("sitemap.xml"),sitemap_xml())?;
  let (_,not_found_html)=page("/page-not-found"); std::fs::write(base.join("404.html"),not_found_html)?;
- let mut paths: Vec<String> = ["/","/all-pages","/faculties","/faculty","/courses","/course","/shared","/pricing","/register","/login","/dashboard","/reset-password","/student/profile","/instructors","/about","/contact","/faq","/terms","/privacy","/refund"].iter().map(|p|p.to_string()).collect();
+ let mut paths: Vec<String> = ["/","/all-pages","/faculties","/faculty","/courses","/course","/shared","/pricing","/register","/login","/dashboard","/reset-password","/student/profile","/instructors","/about","/contact","/faq","/terms","/privacy","/refund","/blog","/copyright"].iter().map(|p|p.to_string()).collect();
  paths.extend(EXTRA_PAGES.iter().map(|p|p.0.to_string()));
  for path in paths { let (status, html)=page(&path); assert_eq!(status,200,"missing page: {}",path); let dir=base.join(path.trim_start_matches('/')); std::fs::create_dir_all(&dir)?; std::fs::write(dir.join("index.html"),html)?; }
  Ok(())
