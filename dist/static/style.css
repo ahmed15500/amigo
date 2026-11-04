@@ -65,3 +65,26 @@ body{background:var(--cream);color:var(--ink)}
 .results-head span{color:#5f7268}
 .group-heading span{color:#5f7268}
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+/* SVG icons + testimonials (UI/UX Pro Max follow-up, 2026-11-04). */
+.aud-icon{color:#2767ff;display:flex}
+.aud-icon svg{width:34px;height:34px}
+.aud-card.pro .aud-icon{color:#ffdf67}
+.trust-strip span{display:inline-flex}
+.trust-strip span svg{width:22px;height:22px;display:block}
+.hero-kicker svg{width:14px;height:14px;flex:none}
+.note-icon svg{width:16px;height:16px;display:block}
+.hero-spark svg{width:1em;height:1em;display:block}
+.faculty-icon svg{width:22px;height:22px}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.testi-card{background:#fff;border:1px solid #e8ecf7;border-radius:16px;padding:26px;margin:0;display:flex;flex-direction:column;gap:14px;transition:transform .25s ease,box-shadow .25s ease}
+.testi-card:hover{transform:translateY(-4px);box-shadow:0 15px 35px rgba(47,79,150,.1)}
+.testi-stars{display:flex;gap:3px;color:#edaa19}
+.testi-stars svg{width:17px;height:17px}
+.testi-card blockquote{margin:0;color:#40506b;font-size:15.5px;line-height:1.95}
+.testi-card figcaption{display:flex;align-items:center;gap:12px;margin-top:auto}
+.testi-avatar{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:19px;color:#fff;flex:none}
+.av-a{background:#2767ff}.av-b{background:#ff6b61}.av-c{background:#00a5af}
+.testi-card figcaption strong{display:block;font-size:14.5px;color:#142d61}
+.testi-card figcaption small{display:block;color:#64748f;font-size:12.5px}
+@media(max-width:760px){.testi-grid{grid-template-columns:1fr}}

@@ -41,7 +41,19 @@
     ['مبتدئ', 'Beginner'],
     ['العربية', 'Arabic'],
     ['الإنجليزية', 'English']
-  ];
+      ['قالوا عن أميجو', 'What learners say'],
+    ['طلابنا وخريجونا', 'Our students & graduates'],
+    ['بيقولوا إيه؟', 'are saying?'],
+    ['كنت تايهة بين المحاضرات والملازم، أميجو جمّع لي كورسات كليتي في مكان واحد، وبقيت أذاكر بخطة واضحة بدل العشوائية.', 'I was lost between lectures and handouts. Amigo gathered my faculty courses in one place, and now I study with a clear plan instead of chaos.'],
+    ['منة خالد', 'Menna Khaled'],
+    ['طالبة، كلية التجارة', 'Student, Faculty of Commerce'],
+    ['الكورسات المهنية فرقت معايا فعلًا؛ خلّصت كورس تحليل البيانات وطبّقت اللي اتعلمته في شغلي من أول أسبوع.', 'The professional courses truly made a difference: I finished the Data Analysis course and applied what I learned at work from the very first week.'],
+    ['عمر سامي', 'Omar Samy'],
+    ['خريج، محاسب', 'Graduate, Accountant'],
+    ['أكتر حاجة عجبتني إن الشرح بالعربي وبأسلوب بسيط، وأقدر أرجع للدرس في أي وقت، خصوصًا قبل الامتحانات.', 'What I liked most is that lessons are explained in Arabic in a simple way, and I can revisit any lesson anytime, especially before exams.'],
+    ['سارة محمود', 'Sara Mahmoud'],
+    ['طالبة، كلية العلاج الطبيعي', 'Student, Faculty of Physical Therapy'],
+];
   // Longest first so full titles/descriptions win over short shared values.
   var FWD = DATA_PAIRS.slice().sort(function (a, b) { return b[0].length - a[0].length; });
   var REV = DATA_PAIRS.map(function (p) { return [p[1], p[0]]; })
