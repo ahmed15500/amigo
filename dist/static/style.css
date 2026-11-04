@@ -88,3 +88,31 @@ body{background:var(--cream);color:var(--ink)}
 .testi-card figcaption strong{display:block;font-size:14.5px;color:#142d61}
 .testi-card figcaption small{display:block;color:#64748f;font-size:12.5px}
 @media(max-width:760px){.testi-grid{grid-template-columns:1fr}}
+
+/* Review fixes (2026-11-04), in priority order. */
+/* 1) Footer logo must stay white on the dark footer. */
+.footer-logo{color:#fff}
+/* 2) Buttons never wrap; tighter header CTA on mobile. */
+.btn{white-space:nowrap}
+@media(max-width:760px){.nav-actions .btn{font-size:12px;padding:9px 12px;gap:6px}}
+/* 3) Retire the old green/beige palette in catalog & detail components. */
+.teacher{background:#eef3ff;border-color:#d7e3fb}
+.teacher span{color:#16305f}
+.aud-tag{background:#e9f0ff;color:#2456c4}
+.aud-tag.pro{background:#ffe9e2;color:#b34a2e}
+.chips a,.badge{background:#e9f0ff}
+.dashboard-note{background:#e9f0ff}
+.enroll-art{background:#ffe5df}
+/* 4) Loading states: spinner + skeleton cards; result count hidden until data lands. */
+.spinner{width:18px;height:18px;flex:none;border-radius:50%;border:3px solid #d7e3fb;border-top-color:#2767ff;animation:amigo-spin .8s linear infinite;display:inline-block}
+@keyframes amigo-spin{to{transform:rotate(360deg)}}
+.loading-block{display:flex;align-items:center;gap:10px;color:#64748f;font-weight:700;padding:34px 0}
+#catalog-message.loading::before{content:"";width:15px;height:15px;margin-inline-end:8px;border-radius:50%;border:3px solid #d7e3fb;border-top-color:#2767ff;animation:amigo-spin .8s linear infinite;display:inline-block;vertical-align:-3px}
+.skel{border-radius:16px;background:linear-gradient(100deg,#edf1f9 40%,#f8fafd 50%,#edf1f9 60%);background-size:200% 100%;animation:amigo-skel 1.4s ease-in-out infinite}
+@keyframes amigo-skel{to{background-position:-200% 0}}
+.skel-fac{height:155px}
+.skel-card{height:330px}
+.results-head strong:has(#result-count:empty){visibility:hidden}
+/* 5) Stronger field borders on forms and filters. */
+.form-card input,.form-card select{border-color:#bfcfe9}
+.filters select,.filters input,.filters .search-field{border-color:#c6d3ec}
