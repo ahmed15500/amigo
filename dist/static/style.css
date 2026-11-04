@@ -116,3 +116,24 @@ body{background:var(--cream);color:var(--ink)}
 /* 5) Stronger field borders on forms and filters. */
 .form-card input,.form-card select{border-color:#bfcfe9}
 .filters select,.filters input,.filters .search-field{border-color:#c6d3ec}
+
+/* Filled content pages: FAQ accordions, steps, blog (2026-11-04). */
+.faq-item{border:1px solid #e2e9f5;border-radius:12px;padding:18px 20px;margin-bottom:12px;background:#fff}
+.faq-item summary{font-weight:800;cursor:pointer;font-size:17px;color:#142d61}
+.faq-item p{color:#5b6b84;margin:12px 0 0;line-height:1.9}
+.prose .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
+.prose .step{background:#fff;border:1px solid #e8ecf7;border-radius:16px;padding:22px}
+.prose .step b{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#2767ff;color:#fff;font-size:17px;margin-bottom:12px}
+.prose .step h3{margin:0 0 6px;font-size:17px;color:#142d61}
+.prose .step p{margin:0;color:#5b6b84;font-size:14.5px;line-height:1.85}
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:start}
+.post-card{background:#fff;border:1px solid #e8ecf7;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:10px}
+.post-card h3{margin:2px 0 0;font-size:19px;line-height:1.5;color:#142d61}
+.post-card>p{margin:0;color:#5b6b84;font-size:14.5px;line-height:1.85}
+.post-card small{color:#8494ad;font-size:12.5px}
+.post-card details{border-top:1px solid #eef1f8;padding-top:12px}
+.post-card details summary{color:#245bde;font-weight:800;cursor:pointer;font-size:14.5px}
+.post-card details p{color:#40506b;font-size:14.5px;line-height:1.95;margin:12px 0 0}
+@media(max-width:900px){.blog-grid{grid-template-columns:1fr}.prose .steps{grid-template-columns:1fr}}
+
+.post-card .badge{align-self:flex-start}
